@@ -1,4 +1,4 @@
-package http;
+package com.eyrealex.http.test;
 
 public enum HttpStatusCode {
 

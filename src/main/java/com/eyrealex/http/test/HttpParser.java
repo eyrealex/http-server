@@ -1,4 +1,4 @@
-package http;
+package com.eyrealex.http.test;
 
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -18,7 +18,7 @@ public class HttpParser {
     private static final int LF = 0x0A; // ASCII code for line feed
 
     // Parse the incoming HTTP request
-    public HttpRequest parserHttpRequest(InputStream inputStream) {
+    public HttpRequest parseHttpRequest(InputStream inputStream) throws HttpParsingException {
 
         // Create a reader to read the input stream using US_ASCII encoding
         InputStreamReader streamReader = new InputStreamReader(inputStream, StandardCharsets.US_ASCII);
@@ -28,7 +28,7 @@ public class HttpParser {
 
         try {
             // Parse the request line
-            parserRequestLine(streamReader, request);
+            parseRequestLine(streamReader, request);
         } catch (IOException e) {
             // If an IOException occurs, wrap it in a RuntimeException and throw
             throw new RuntimeException(e);
@@ -50,10 +50,12 @@ public class HttpParser {
     }
 
     // Parse the request line of the HTTP request
-    private void parserRequestLine(InputStreamReader streamReader, HttpRequest request) throws IOException {
+    private void parseRequestLine(InputStreamReader streamReader, HttpRequest request) throws IOException, HttpParsingException {
         // StringBuilder to store the data being processed
         StringBuilder processingDataBuffer = new StringBuilder();
         int _byte;
+        boolean methodParsed = false;
+        boolean requestTargetParsed = false;
 
         // Read characters until end of stream is reached
         while ((_byte = streamReader.read()) >= 0) {
@@ -64,21 +66,40 @@ public class HttpParser {
                 // If the next character is line feed (LF), the request line has been processed
                 if (_byte == LF) {
                     // Log the processed request line
-                    LOGGER.debug("Request Line to Process : {}", processingDataBuffer.toString());
+                    LOGGER.debug("Request Line VERSION to Process : {}", processingDataBuffer.toString());
+
+                    if(!methodParsed || !requestTargetParsed){
+                        throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+                    }
                     return;
                 }
             }
 
             // Check for space character (SP)
-            if (_byte == SP){
+            if (_byte == SP) {
                 // Log the processed request line
-                LOGGER.debug("Request Line to Process : {}", processingDataBuffer.toString());
+                if (!methodParsed) {
+                    LOGGER.debug("Request Line METHOD to Process : {}", processingDataBuffer.toString());
+                    request.setMethod(processingDataBuffer.toString());
+                    methodParsed = true;
+                } else if (!requestTargetParsed) {
+                    LOGGER.debug("Request Line REQ TARGET to Process : {}", processingDataBuffer.toString());
+                    requestTargetParsed = true;
+                }else{
+                    throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+                }
+
                 // Clear the processing data buffer for the next part of the request line
                 processingDataBuffer.delete(0, processingDataBuffer.length());
 
             } else {
                 // Append the character to the processing data buffer
                 processingDataBuffer.append((char) _byte);
+                if(!methodParsed){
+                    if(processingDataBuffer.length() > HttpMethod.MAX_LENGTH){
+                        throw new HttpParsingException((HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED));
+                    }
+                }
             }
         }
     }
