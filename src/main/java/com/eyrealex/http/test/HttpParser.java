@@ -68,7 +68,7 @@ public class HttpParser {
                     // Log the processed request line
                     LOGGER.debug("Request Line VERSION to Process : {}", processingDataBuffer.toString());
 
-                    if(!methodParsed || !requestTargetParsed){
+                    if (!methodParsed || !requestTargetParsed) {
                         throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
                     }
 
@@ -79,7 +79,7 @@ public class HttpParser {
                     }
 
                     return;
-                }else{
+                } else {
                     throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
                 }
             }
@@ -95,7 +95,7 @@ public class HttpParser {
                     LOGGER.debug("Request Line REQ TARGET to Process : {}", processingDataBuffer.toString());
                     request.setRequestTarget(processingDataBuffer.toString());
                     requestTargetParsed = true;
-                }else{
+                } else {
                     throw new HttpParsingException(HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
                 }
 
@@ -105,8 +105,8 @@ public class HttpParser {
             } else {
                 // Append the character to the processing data buffer
                 processingDataBuffer.append((char) _byte);
-                if(!methodParsed){
-                    if(processingDataBuffer.length() > HttpMethod.MAX_LENGTH){
+                if (!methodParsed) {
+                    if (processingDataBuffer.length() > HttpMethod.MAX_LENGTH) {
                         throw new HttpParsingException((HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED));
                     }
                 }

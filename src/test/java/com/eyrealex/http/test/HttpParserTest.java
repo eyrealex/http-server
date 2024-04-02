@@ -104,6 +104,32 @@ class HttpParserTest {
         }
     }
 
+    @Test
+    void parseHttpRequestBadHttpVersion() {
+        // Invoke parserHttpRequest with a valid test case
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                    generateBadHttpVersionTestCase()
+            );
+            fail();
+        } catch (HttpParsingException e) {
+            assertEquals(e.getErrorCode(), HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
+        }
+    }
+
+    @Test
+    void parseHttpRequestUnsupportedVersion() {
+        // Invoke parserHttpRequest with a valid test case
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                    generateUnsupportedHttpVersionTestCase()
+            );
+            fail();
+        } catch (HttpParsingException e) {
+            assertEquals(e.getErrorCode(), HttpStatusCode.SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED);
+        }
+    }
+
     // Helper method to generate a valid test case InputStream
     private InputStream generateValidGETTestCase() {
         // Generate a raw HTTP request string
@@ -195,6 +221,36 @@ class HttpParserTest {
     private InputStream generateBadTestCaseRequestLineOnlyCRnoLF() {
         // Generate a raw HTTP request string
         String rawData = "GET / HTTP/1.1\r" + // <--- No LF
+                "Host: localhost:8080\r\n" +
+                "Accept-Language: en-US,en;q=0.9\\r\\n\"" + "\r\n";
+
+        // Convert raw data to InputStream using US_ASCII encoding
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+        return inputStream;
+    }
+
+    private InputStream generateBadHttpVersionTestCase() {
+        // Generate a raw HTTP request string
+        String rawData = "GET / HTP/1.1\r\n" +
+                "Host: localhost:8080\r\n" +
+                "Accept-Language: en-US,en;q=0.9\\r\\n\"" + "\r\n";
+
+        // Convert raw data to InputStream using US_ASCII encoding
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+        return inputStream;
+    }
+
+    private InputStream generateUnsupportedHttpVersionTestCase() {
+        // Generate a raw HTTP request string
+        String rawData = "GET / HTTP/2.1\r\n" +
                 "Host: localhost:8080\r\n" +
                 "Accept-Language: en-US,en;q=0.9\\r\\n\"" + "\r\n";
 
