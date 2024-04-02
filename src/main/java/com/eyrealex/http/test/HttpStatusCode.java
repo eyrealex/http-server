@@ -1,4 +1,4 @@
-package http;
+package com.eyrealex.http.test;
 
 public enum HttpStatusCode {
 
@@ -9,7 +9,8 @@ public enum HttpStatusCode {
 
     //Server errors
     SERVER_ERROR_500_INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
-    SERVER_ERROR_501_NOT_IMPLEMENTED(500, "Not Implemented");
+    SERVER_ERROR_501_NOT_IMPLEMENTED(500, "Not Implemented"),
+    SERVER_ERROR_505_HTTP_VERSION_NOT_SUPPORTED(505, "Http Version Not Supported");
 
     public final int STATUS_CODE;
     public final String MESSAGE;
