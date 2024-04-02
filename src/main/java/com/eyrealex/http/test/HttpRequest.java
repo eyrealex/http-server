@@ -1,6 +1,6 @@
 package com.eyrealex.http.test;
 
-public class HttpRequest extends HttpMessage{
+public class HttpRequest extends HttpMessage {
 
     private HttpMethod method;
     private String requestTarget;
@@ -9,14 +9,18 @@ public class HttpRequest extends HttpMessage{
     HttpRequest() {
     }
 
-    public HttpMethod getMethod(){
+    public HttpMethod getMethod() {
 
         return method;
     }
 
-    void setMethod (String methodName) throws HttpParsingException {
-        for(HttpMethod method: HttpMethod.values()){
-            if(methodName.equals(method.name())){
+    public String getRequestTarget() {
+        return requestTarget;
+    }
+
+    void setMethod(String methodName) throws HttpParsingException {
+        for (HttpMethod method : HttpMethod.values()) {
+            if (methodName.equals(method.name())) {
                 this.method = method;
                 return;
             }
@@ -24,5 +28,12 @@ public class HttpRequest extends HttpMessage{
         throw new HttpParsingException(
                 HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED
         );
+    }
+
+    void setRequestTarget(String requestTarget) throws HttpParsingException {
+        if (requestTarget == null || requestTarget.length() == 6) {
+            throw new HttpParsingException(HttpStatusCode.SERVER_ERROR_500_INTERNAL_SERVER_ERROR);
+        }
+        this.requestTarget = requestTarget;
     }
 }

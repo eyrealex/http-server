@@ -34,8 +34,11 @@ class HttpParserTest {
             fail(e);
         }
         // Assertions can be added here to verify the correctness of parsing
+        assertNotNull(request);
         assertEquals(request.getMethod(), HttpMethod.GET);
+        assertEquals(request.getRequestTarget(), "/");
     }
+
     @Test
     void parseHttpRequestBadMethod() {
         // Invoke parserHttpRequest with a valid test case
@@ -48,6 +51,7 @@ class HttpParserTest {
             assertEquals(e.getErrorCode(), HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED);
         }
     }
+
     @Test
     void parseHttpRequestBadMethod2() {
         // Invoke parserHttpRequest with a valid test case
@@ -60,6 +64,7 @@ class HttpParserTest {
             assertEquals(e.getErrorCode(), HttpStatusCode.SERVER_ERROR_501_NOT_IMPLEMENTED);
         }
     }
+
     @Test
     void parseHttpRequestInvalidNumItems1() {
         // Invoke parserHttpRequest with a valid test case
@@ -72,6 +77,7 @@ class HttpParserTest {
             assertEquals(e.getErrorCode(), HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
         }
     }
+
     @Test
     void parseHttpEmptyRequestLine() {
         // Invoke parserHttpRequest with a valid test case
@@ -84,6 +90,7 @@ class HttpParserTest {
             assertEquals(e.getErrorCode(), HttpStatusCode.CLIENT_ERROR_400_BAD_REQUEST);
         }
     }
+
     @Test
     void parseHttpEmptyRequestLineCRnoLF() {
         // Invoke parserHttpRequest with a valid test case
@@ -124,6 +131,7 @@ class HttpParserTest {
         );
         return inputStream;
     }
+
     private InputStream generateBadTestCaseMethodName() {
         // Generate a raw HTTP request string
         String rawData = "GeT / HTTP/1.1\r\n" +
@@ -138,6 +146,7 @@ class HttpParserTest {
         );
         return inputStream;
     }
+
     private InputStream generateBadTestCaseMethodName2() {
         // Generate a raw HTTP request string
         String rawData = "GETTT / HTTP/1.1\r\n" +
@@ -152,6 +161,7 @@ class HttpParserTest {
         );
         return inputStream;
     }
+
     private InputStream generateBadTestCaseRequestLineInvalidNumItems1() {
         // Generate a raw HTTP request string
         String rawData = "GET / AAAA HTTP/1.1\r\n" +
@@ -166,9 +176,10 @@ class HttpParserTest {
         );
         return inputStream;
     }
-    private InputStream generateBadTestCaseRequestLineOnlyCRnoLF() {
+
+    private InputStream generateBadTestCaseSendEmptyRequestLine() {
         // Generate a raw HTTP request string
-        String rawData = "GET / HTTP/1.1\r" + // <--- No LF
+        String rawData = "\r\n" +
                 "Host: localhost:8080\r\n" +
                 "Accept-Language: en-US,en;q=0.9\\r\\n\"" + "\r\n";
 
@@ -180,9 +191,10 @@ class HttpParserTest {
         );
         return inputStream;
     }
-    private InputStream generateBadTestCaseSendEmptyRequestLine() {
+
+    private InputStream generateBadTestCaseRequestLineOnlyCRnoLF() {
         // Generate a raw HTTP request string
-        String rawData = "\r\n" +
+        String rawData = "GET / HTTP/1.1\r" + // <--- No LF
                 "Host: localhost:8080\r\n" +
                 "Accept-Language: en-US,en;q=0.9\\r\\n\"" + "\r\n";
 
