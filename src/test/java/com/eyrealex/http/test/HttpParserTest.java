@@ -130,6 +130,20 @@ class HttpParserTest {
         }
     }
 
+    @Test
+    void parseHttpRequestSupportedVersion() {
+        // Invoke parserHttpRequest with a valid test case
+        try {
+            HttpRequest request = httpParser.parseHttpRequest(
+                    generateSupportedHttpVersionTestCase()
+            );
+            assertNotNull(request);
+            assertEquals(request.getBestCompatibleVersion(), HttpVersion.HTTP_1_1);
+        } catch (HttpParsingException e) {
+            fail();
+        }
+    }
+
     // Helper method to generate a valid test case InputStream
     private InputStream generateValidGETTestCase() {
         // Generate a raw HTTP request string
@@ -251,6 +265,21 @@ class HttpParserTest {
     private InputStream generateUnsupportedHttpVersionTestCase() {
         // Generate a raw HTTP request string
         String rawData = "GET / HTTP/2.1\r\n" +
+                "Host: localhost:8080\r\n" +
+                "Accept-Language: en-US,en;q=0.9\\r\\n\"" + "\r\n";
+
+        // Convert raw data to InputStream using US_ASCII encoding
+        InputStream inputStream = new ByteArrayInputStream(
+                rawData.getBytes(
+                        StandardCharsets.US_ASCII
+                )
+        );
+        return inputStream;
+    }
+
+    private InputStream generateSupportedHttpVersionTestCase() {
+        // Generate a raw HTTP request string
+        String rawData = "GET / HTTP/1.2\r\n" +
                 "Host: localhost:8080\r\n" +
                 "Accept-Language: en-US,en;q=0.9\\r\\n\"" + "\r\n";
 
